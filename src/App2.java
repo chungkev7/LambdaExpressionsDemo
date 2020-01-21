@@ -1,4 +1,9 @@
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class App2 {
 
@@ -45,7 +50,35 @@ public class App2 {
 		Function<Integer, Integer> function3 = n1 -> n1 + n1;
 		Function<Integer, Integer> function4 = n1 -> n1 * n1;
 		System.out.println("Function 3 andThen Function 4: " + function3.andThen(function4).apply(10)); // Function 3 andThen Function 4: 400
-		System.out.println("Function 3 compose Function 4: " + function3.compose(function4).apply(10)); // Function 3 compose Function 4: 200
+		System.out.println("Function 3 compose Function 4: " + function3.compose(function4).apply(10) + "\n"); // Function 3 compose Function 4: 200
+	
+		// Identity returns its input argument
+		Function<String, String> function5 = Function.identity();
+		System.out.println(function5.apply("Java")); // Java
+		Function<Boolean,Boolean> function6 = Function.identity();
+		System.out.println(function6.apply(true)); // true
+		Function<Integer, Integer> function7 = Function.identity();
+		System.out.println(function7.apply(1) + "\n"); // 1
+		
+		// Predicate: takes an object as input and returns either true
+		// or false based on the condition
+		withoutPredicate(); // Transaction amount is less than 10000.
+		withPredicate(); // Transaction amount is less than 10000.
+		System.out.println();
+		
+		// Supplier: takes no input and returns the output
+		getInterestRate(); // 1.31
+		
+		// Consumer: takes a single input and returns nothing, i.e. void
+		consumer(); // java
+		
+		Consumer<String> consumer = message -> EmailUtility.sendEmail(message);
+		consumer.accept("Your account has been created");
+		System.out.println();
+		
+		// forEach
+		List<Integer> intList = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
+		intList.forEach(System.out :: println);
 	}
 
 	static void helloMethodReference() {
@@ -73,6 +106,47 @@ public class App2 {
 		Function<Integer, Integer> function = n1 -> n1 * n1;
 		System.out.println(5 + " squared is: " + function.apply(5) + "\n");
 	}
+	
+	public static Boolean isGreater(Integer n) {
+		if (n > 10000) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private static void withoutPredicate() {
+		System.out.println("From withoutPredicate");
+		Integer transactionAmount = 20000;
+		if (isGreater(transactionAmount)) {
+			System.out.println("Transaction amount can't be greater than 10000.");
+		} else {
+			System.out.println("Transaction amount is less than 10000.");
+		}
+	}
+	
+	private static void withPredicate() {
+		System.out.println("From withPredicate");
+		Integer amount = 20000;
+		Predicate<Integer> p = transactionAmount -> transactionAmount > 10000;
+		if (p.test(amount)) {
+			System.out.println("Transaction amount can't be greater than 10000.");
+		} else {
+			System.out.println("Transaction amount is less than 10000.");
+		}
+	}
+	
+	public static void getInterestRate() {
+		double interestRate = 1.31;
+		Supplier<Double> supplier = () -> interestRate;
+		System.out.println(supplier.get() + "\n");
+	}
+	
+	public static void consumer() {
+		Consumer<String> consumer = str -> System.out.println(str.toLowerCase());
+		consumer.accept("Java");
+		System.out.println("");
+	}
 }
 
 interface HelloInterface {
@@ -85,4 +159,10 @@ interface DebugLambdaInterface {
 
 interface MethodReference {
 	public void helloMethodReference();
+}
+
+class EmailUtility {
+	public static void sendEmail(String message) {
+		System.out.println("Successfully sent an email with the message \n" + message);
+	}
 }
